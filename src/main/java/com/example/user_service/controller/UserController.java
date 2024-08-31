@@ -1,13 +1,11 @@
 package com.example.user_service.controller;
 
-import com.example.user_service.data.User;
 import com.example.user_service.data.userDTO.*;
 import com.example.user_service.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -17,12 +15,12 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(path = "/")
-    public UserResponseDTO createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
+    public UserCommonResponseDTO createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
         return userService.createUser(userCreateDTO);
     }
 
     @PutMapping(path = "/")
-    public UserResponseDTO updateUser(@Valid @RequestBody UserUpdateDTO userUpdateDTO) {
+    public UserCommonResponseDTO updateUser(@Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         return userService.updateUser(userUpdateDTO);
     }
 
@@ -37,12 +35,17 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public String deleteUser(@PathVariable int id) {
+    public UserCommonResponseDTO deleteUser(@PathVariable int id) {
         return userService.deleteUser(id);
     }
 
     @PostMapping(path = "/login")
     public UserLoginResponseDTO login(@Valid @RequestBody UserLoginDTO userLoginDTO){
         return userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
+    }
+
+    @GetMapping(path = "/search")
+    public UserPaginatedDTO<UserResponseDTO> searchUsers(@RequestParam(defaultValue = "") String keyword,@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
+        return userService.searchUsers(keyword, page, size);
     }
 }

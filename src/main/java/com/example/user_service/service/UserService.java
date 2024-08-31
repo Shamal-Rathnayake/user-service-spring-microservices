@@ -30,7 +30,7 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-    public UserResponseDTO createUser(UserCreateDTO userCreateDTO) throws UserAlreadyExistsException {
+    public UserCommonResponseDTO createUser(UserCreateDTO userCreateDTO) throws UserAlreadyExistsException {
 
         User user = userMapper.toEntity(userCreateDTO);
         try {
@@ -40,25 +40,28 @@ public class UserService {
 
             User savedUser = userRepository.save(user);
 
-            return userMapper.toDTO(savedUser);
+            return new UserCommonResponseDTO(userMapper.toDTO(savedUser));
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyExistsException("A user with the email " + user.getEmail() + " already exists.");
         }
 
     }
 
-    public UserResponseDTO updateUser(UserUpdateDTO userUpdateDTO) {
+    public UserCommonResponseDTO updateUser(UserUpdateDTO userUpdateDTO) {
 
         Optional<User> existingUser = userRepository.findById(userUpdateDTO.getId());
 
         if (existingUser.isPresent()) {
             User dbUser = existingUser.get();
 
+            String hashedPassword = passwordService.hashPassword(userUpdateDTO.getPassword());
+            userUpdateDTO.setPassword(hashedPassword);
+
             userMapper.updateUserFromDTO(userUpdateDTO, dbUser);
 
             User updatedUser = userRepository.save(dbUser);
 
-            return userMapper.toDTO(updatedUser);
+            return new UserCommonResponseDTO(userMapper.toDTO(updatedUser));
         } else {
             throw new UserNotFoundWIthIdException("User not found with id: " + userUpdateDTO.getId());
         }
@@ -95,9 +98,19 @@ public class UserService {
                 1);
     }
 
-    public String deleteUser(int userId) {
-        userRepository.deleteById(userId);
-        return "User deleted successfully";
+    public UserCommonResponseDTO deleteUser(int userId) {
+        Optional<User> existingUser = userRepository.findById(userId);
+
+        if (existingUser.isPresent()) {
+            userRepository.deleteById(userId);
+            return new UserCommonResponseDTO(userMapper.toDTO(existingUser.get()));
+        }
+        else{
+            throw new UserNotFoundWIthIdException("User not found with given id");
+        }
+
+
+
     }
 
     public UserLoginResponseDTO login (String email, String password){
@@ -117,5 +130,19 @@ public class UserService {
         }
     }
 
+    public UserPaginatedDTO<UserResponseDTO> searchUsers(String keyword, int page, int size){
+        Pageable pageable = PageRequest.of(page > 0 ? page - 1 : 0, size);
+        Page<User> userPage = userRepository.findByKeyword(keyword, pageable);
+
+        List<UserResponseDTO> userResponses = userPage.stream()
+                .map(userMapper::toDTO)
+                .collect(Collectors.toList());
+
+        return new UserPaginatedDTO<>(userResponses,
+                userPage.getNumber() + 1,
+                userPage.getSize(),
+                userPage.getTotalElements(),
+                userPage.getTotalPages());
+    }
 
 }

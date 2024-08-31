@@ -7,6 +7,7 @@ public class UserResponseDTO {
     private int id;
     private String firstName;
     private String lastName;
+    private String address;
     private String phoneNumber;
     private String email;
     private String role;
@@ -50,6 +51,14 @@ public class UserResponseDTO {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getLastName() {

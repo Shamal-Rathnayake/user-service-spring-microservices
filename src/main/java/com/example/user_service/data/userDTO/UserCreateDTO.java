@@ -19,6 +19,10 @@ public class UserCreateDTO {
     @Pattern(regexp = "^\\+?[0-9]{10}$", message = "Phone number must be a valid phone number")
     private String phoneNumber;
 
+    @NotBlank(message = "Address is required")
+    @Size(max = 50, message = "Address must be less than or equal to 50 characters")
+    private String address;
+
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
@@ -53,6 +57,14 @@ public class UserCreateDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getPhoneNumber() {

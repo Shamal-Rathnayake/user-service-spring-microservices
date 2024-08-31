@@ -22,6 +22,9 @@ public class User {
     private String lastName;
 
     @Column(name = "address")
+    private String address;
+
+    @Column(name = "phoneNumber")
     private String phoneNumber;
 
     @Column(name = "email", unique = true)
@@ -59,6 +62,14 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getPhoneNumber() {
@@ -100,6 +111,4 @@ public class User {
     public void setJoinedDate(LocalDateTime joinedDate) {
         this.joinedDate = joinedDate;
     }
-
-
 }
