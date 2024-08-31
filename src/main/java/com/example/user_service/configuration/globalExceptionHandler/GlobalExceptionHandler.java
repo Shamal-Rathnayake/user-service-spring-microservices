@@ -5,6 +5,7 @@ import com.example.user_service.configuration.customExceptions.UserAlreadyExists
 import com.example.user_service.configuration.customExceptions.UserNotFoundWIthIdException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.example.user_service.configuration.errorResponse.ErrorResponse;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -51,16 +53,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)  // 400 Bad Request
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = ex.getBindingResult()
-                .getAllErrors()
-                .stream()
-                .collect(Collectors.toMap(
-                        error -> ((org.springframework.validation.FieldError) error).getField(),
-                        error -> error.getDefaultMessage()
-                ));
-
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 

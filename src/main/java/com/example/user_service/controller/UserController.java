@@ -22,7 +22,7 @@ public class UserController {
     }
 
     @PutMapping(path = "/")
-    public UserResponseDTO updateUser(@RequestBody UserUpdateDTO userUpdateDTO) {
+    public UserResponseDTO updateUser(@Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         return userService.updateUser(userUpdateDTO);
     }
 
@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/login")
-    public UserLoginResponseDTO login(@RequestBody UserLoginDTO userLoginDTO){
+    public UserLoginResponseDTO login(@Valid @RequestBody UserLoginDTO userLoginDTO){
         return userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
     }
 }
