@@ -1,8 +1,8 @@
 package com.example.user_service.service;
 
-import com.example.user_service.configuration.exceptionHandler.InvalidCredentialsException;
-import com.example.user_service.configuration.exceptionHandler.UserAlreadyExistsException;
-import com.example.user_service.configuration.exceptionHandler.UserNotFoundWIthIdException;
+import com.example.user_service.configuration.customExceptions.InvalidCredentialsException;
+import com.example.user_service.configuration.customExceptions.UserAlreadyExistsException;
+import com.example.user_service.configuration.customExceptions.UserNotFoundWIthIdException;
 import com.example.user_service.data.User;
 import com.example.user_service.data.userDTO.*;
 import com.example.user_service.data.UserRepository;

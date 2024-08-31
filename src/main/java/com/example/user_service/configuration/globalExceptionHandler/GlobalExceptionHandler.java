@@ -1,16 +1,19 @@
-package com.example.user_service.configuration.customExceptions;
+package com.example.user_service.configuration.globalExceptionHandler;
 
-import com.example.user_service.configuration.exceptionHandler.InvalidCredentialsException;
-import com.example.user_service.configuration.exceptionHandler.UserAlreadyExistsException;
-import com.example.user_service.configuration.exceptionHandler.UserNotFoundWIthIdException;
+import com.example.user_service.configuration.customExceptions.InvalidCredentialsException;
+import com.example.user_service.configuration.customExceptions.UserAlreadyExistsException;
+import com.example.user_service.configuration.customExceptions.UserNotFoundWIthIdException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import com.example.user_service.configuration.errorResponse.ErrorResponse;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -45,6 +48,20 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)  // 400 Bad Request
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = ex.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .collect(Collectors.toMap(
+                        error -> ((org.springframework.validation.FieldError) error).getField(),
+                        error -> error.getDefaultMessage()
+                ));
+
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
 }

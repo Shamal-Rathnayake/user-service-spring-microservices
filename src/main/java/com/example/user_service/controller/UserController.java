@@ -3,6 +3,7 @@ package com.example.user_service.controller;
 import com.example.user_service.data.User;
 import com.example.user_service.data.userDTO.*;
 import com.example.user_service.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(path = "/")
-    public UserResponseDTO createUser(@RequestBody UserCreateDTO userCreateDTO) {
+    public UserResponseDTO createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
         return userService.createUser(userCreateDTO);
     }
 
